@@ -16,7 +16,7 @@ cat << EOL > /etc/fail2ban/jail.d/ssh.conf
 enabled = true
 port = 2222
 filter = sshd
-logpath = /var/log/auth.log
+backend = systemd
 maxretry = 3
 bantime = 600
 findtime = 600
@@ -58,4 +58,4 @@ iptables-save > /etc/iptables/rules.v4
 
 EOF
 
-echo "Configuration complete. Ensure you can connect to the server on port 2222."
+echo "Configuration complete." && exit
