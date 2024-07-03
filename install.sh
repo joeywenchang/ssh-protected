@@ -46,7 +46,6 @@ iptables -A INPUT -p tcp --dport 2222 -m state --state NEW -m recent --update --
 
 # Save iptables rules
 iptables-save > /etc/iptables/rules.v4
-systemctl restart netfilter-persistent
 
 EOF
 
