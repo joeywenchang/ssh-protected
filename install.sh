@@ -59,10 +59,3 @@ iptables-save > /etc/iptables/rules.v4
 EOF
 
 echo "Configuration complete. Ensure you can connect to the server on port 2222."
-Explanation:
-Elevate Privileges: The sudo su <<EOF block ensures all commands run as root.
-Update and Install Fail2Ban: Installs Fail2Ban and updates the package list.
-Backup and Configure Fail2Ban: Backs up the original Fail2Ban configuration and creates a new one for SSH.
-Restart Fail2Ban: Applies the new Fail2Ban configuration.
-Configure SSH: Changes SSH configuration to use port 2222, disables password authentication, and sets the maximum number of authentication attempts.
-Restart SSH: 
