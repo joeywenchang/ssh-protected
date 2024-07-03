@@ -7,9 +7,6 @@ sudo su << EOF
 apt-get update
 apt-get install -y fail2ban
 
-# Backup the original Fail2Ban jail.conf
-cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-
 # Create a new Fail2Ban SSH jail configuration
 cat << EOL > /etc/fail2ban/jail.d/ssh.conf
 [sshd]
