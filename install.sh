@@ -1,26 +1,11 @@
 #!/bin/bash
 
 # Elevate privileges to root
-sudo su << EOF
+sudo bash << EOF
 
-# Update package list and install Fail2Ban
+# Install iptables-persistent if not already installed
 apt-get update
-apt-get install -y fail2ban
-
-# Create a new Fail2Ban SSH jail configuration
-cat << EOL > /etc/fail2ban/jail.d/ssh.conf
-[sshd]
-enabled = true
-port = 2222
-filter = sshd
-backend = systemd
-maxretry = 3
-bantime = 600
-findtime = 600
-EOL
-
-# Restart Fail2Ban to apply the new configuration
-systemctl restart fail2ban
+apt-get install -y iptables-persistent
 
 # Configure SSH settings
 sed -i -e '/^#Port 22/c\Port 2222' \
@@ -55,9 +40,14 @@ iptables -A INPUT -p tcp --dport 53 -j ACCEPT
 iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
+# Rate limiting
+iptables -A INPUT -p tcp --dport 2222 -m state --state NEW -m recent --set
+iptables -A INPUT -p tcp --dport 2222 -m state --state NEW -m recent --update --seconds 600 --hitcount 3 -j DROP
+
 # Save iptables rules
 iptables-save > /etc/iptables/rules.v4
+systemctl restart netfilter-persistent
 
 EOF
 
-echo "Configuration complete." && exit
+echo "Configuration complete."
