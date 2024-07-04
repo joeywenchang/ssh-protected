@@ -15,7 +15,7 @@ iptables -t raw -X
 
 # Set default policies
 iptables -P INPUT DROP
-iptables -P FORWARD DROP
+iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 
 # Allow necessary traffic
