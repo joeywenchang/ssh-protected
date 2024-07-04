@@ -3,10 +3,6 @@
 # Elevate privileges to root
 sudo bash << EOF
 
-# Install iptables-persistent if not already installed
-apt-get update
-apt-get install -y iptables-persistent
-
 # Configure SSH settings
 sed -i -e '/^#Port 22/c\Port 2222' \
        -e '/^#PermitRootLogin prohibit-password/c\PermitRootLogin prohibit-password' \
@@ -15,7 +11,7 @@ sed -i -e '/^#Port 22/c\Port 2222' \
        -e '/^#MaxAuthTries 6/c\MaxAuthTries 3' /etc/ssh/sshd_config
 
 # Restart SSH service to apply the new configuration
-systemctl restart sshd
+systemctl restart ssh
 
 # Flush all iptables rules
 iptables -F
@@ -44,8 +40,21 @@ iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 iptables -A INPUT -p tcp --dport 2222 -m state --state NEW -m recent --set
 iptables -A INPUT -p tcp --dport 2222 -m state --state NEW -m recent --update --seconds 600 --hitcount 3 -j DROP
 
+# Pre-configure debconf to automatically save iptables rules during installation
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | debconf-set-selections
+
+# Install iptables-persistent if not already installed
+apt-get update
+apt-get install -y iptables-persistent
+
 # Save iptables rules
 iptables-save > /etc/iptables/rules.v4
+ip6tables-save > /etc/iptables/rules.v6
+
+# Ensure netfilter-persistent is enabled and started
+systemctl enable netfilter-persistent
+systemctl start netfilter-persistent
 
 EOF
 
