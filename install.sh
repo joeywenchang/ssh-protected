@@ -54,7 +54,8 @@ sed -i -e '/^#Port 22/c\Port 2222' \
        -e '/^#MaxAuthTries 6/c\MaxAuthTries 3' /etc/ssh/sshd_config
 
 # Restart SSH service to apply the new configuration
-systemctl restart ssh
+systemctl enable ssh
+systemctl restart sshd
 
 EOF
 
