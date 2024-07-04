@@ -3,16 +3,6 @@
 # Elevate privileges to root
 sudo bash << EOF
 
-# Configure SSH settings
-sed -i -e '/^#Port 22/c\Port 2222' \
-       -e '/^#PermitRootLogin prohibit-password/c\PermitRootLogin prohibit-password' \
-       -e '/^#PasswordAuthentication yes/c\PasswordAuthentication no' \
-       -e '/^#PubkeyAuthentication yes/c\PubkeyAuthentication yes' \
-       -e '/^#MaxAuthTries 6/c\MaxAuthTries 3' /etc/ssh/sshd_config
-
-# Restart SSH service to apply the new configuration
-systemctl restart ssh
-
 # Flush all iptables rules
 iptables -F
 iptables -X
@@ -55,6 +45,16 @@ ip6tables-save > /etc/iptables/rules.v6
 # Ensure netfilter-persistent is enabled and started
 systemctl enable netfilter-persistent
 systemctl start netfilter-persistent
+
+# Configure SSH settings
+sed -i -e '/^#Port 22/c\Port 2222' \
+       -e '/^#PermitRootLogin prohibit-password/c\PermitRootLogin prohibit-password' \
+       -e '/^#PasswordAuthentication yes/c\PasswordAuthentication no' \
+       -e '/^#PubkeyAuthentication yes/c\PubkeyAuthentication yes' \
+       -e '/^#MaxAuthTries 6/c\MaxAuthTries 3' /etc/ssh/sshd_config
+
+# Restart SSH service to apply the new configuration
+systemctl restart ssh
 
 EOF
 
